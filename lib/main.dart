@@ -1,14 +1,19 @@
-import 'package:basics_provider/provider.dart/cart_provider.dart';
-import 'package:basics_provider/provider.dart/counter_provider.dart';
-import 'package:basics_provider/screens/home.dart';
-import 'package:basics_provider/screens/shopping.dart';
-import 'package:basics_provider/theme/theme_changer.dart';
-import 'package:basics_provider/theme/theme_constants.dart';
+import 'package:basics_provider/screens/Loby/loby_page.dart';
+import 'package:basics_provider/screens/cart/provider/cart_provider.dart';
+import 'package:basics_provider/screens/home/provider/counter_provider.dart';
+import 'package:basics_provider/screens/home/view/home.dart';
+import 'package:basics_provider/screens/cart/view/shopping.dart';
+import 'package:basics_provider/theme/methodes/theme_changer.dart';
+import 'package:basics_provider/theme/methodes/theme_constants.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get_navigation/get_navigation.dart';
 import 'package:provider/provider.dart';
 
-void main() {
+void  main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(
    MultiProvider(
     providers: [
@@ -20,21 +25,35 @@ void main() {
     );
 }
 
- 
 class MyApp extends StatelessWidget {
    const MyApp({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
       theme: lightTheme,
       darkTheme: darkTheme,
       themeMode:context.watch<ThemeChanger>().thememode,
-     initialRoute: '/',
-     routes: {
-      '/' : (context)=> MyhomePage(),
-      '/shoping' : (context)=>const Shopping(), 
-     },
+      home:const MainPage(),
     );
   }
 }
+
+class MainPage extends StatelessWidget {
+  const MainPage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context)=>
+  StreamBuilder<User?>(
+    stream: FirebaseAuth.instance.authStateChanges(),
+    builder: (context, snapshot) {
+     if (snapshot.hasData) {
+       return const Home();
+     }
+     else{
+      return const LobyPage();
+     }
+  },);
+}
+
 
