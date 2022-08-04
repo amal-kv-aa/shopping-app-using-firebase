@@ -1,105 +1,181 @@
-import 'package:basics_provider/screens/cart/provider/cart_provider.dart';
-import 'package:basics_provider/theme/methodes/theme_changer.dart';
+import 'package:basics_provider/screens/cart/view/shopping.dart';
+import 'package:basics_provider/screens/home/model/suggestion_model/suggestio.dart';
+import 'package:basics_provider/screens/home/model/top_brand_model/model.dart';
+import 'package:basics_provider/screens/home/provider/counter_provider.dart';
+import 'package:basics_provider/screens/home/view/widgets/cartitem/cards.dart';
+import 'package:basics_provider/screens/home/view/widgets/slideshow/coverimage.dart';
+import 'package:basics_provider/screens/home/view/widgets/suggetion_card/suggetion_show.dart';
+import 'package:basics_provider/utils/methodes/theme_changer.dart';
+import 'package:basics_provider/utils/textheads/textheads.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 class Home extends StatelessWidget {
- const  Home({Key? key}) : super(key:key);
-  @override   
+  Home({Key? key}) : super(key: key);
+  final ScrollController scrollController = ScrollController();
+  @override
   Widget build(BuildContext context) {
-   
-    return
-    Scaffold(
+    // final isdark = context.watch<ThemeChanger>().isdark;
+    final size = MediaQuery.of(context).size;
+    return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title:Row(children: [
-          const Text('Theme mode',)
-          ,Switch(value: context.watch<ThemeChanger>().thememode==ThemeMode.dark, onChanged:(newValue){
-           context.read<ThemeChanger>().toggleTheme(newValue);
-          },
-          inactiveThumbColor:const Color.fromARGB(255, 255, 255, 255),
-          activeColor:const Color.fromARGB(255, 0, 0, 0),
-          )
-        ],),
-       actions: [
-         Row(
-           children: [
-              IconButton(onPressed: (){
-               Navigator.pushNamed(context, '/shoping');
-              }, icon:const Icon(Icons.shopping_cart,color: Colors.white,),),
-              Text(context.watch<Cart>().count.toString(),style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0))),
-              SizedBox(width: MediaQuery.of(context).size.width*0.05,)
-           ],
-         )
-          
-       ],
-      ),
-      body: Center(
-        child: Column(
-          children: [
-            const SizedBox(height: 100,),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children:  <Widget>[
-                    Column(
-                      children: [
-                        SizedBox(
-                          height: 150,
-                          width: 120,
-                          child: Card(
-                            child: Image.network('https://sp.yimg.com/ib/th?id=OPA.4D7cP0%2fsFwLImA474C474&o=5&pid=21.1&w=174&h=174',fit: BoxFit.cover,),
-                          ),
-                        ),
-                        ElevatedButton(onPressed: ()=>context.read<Cart>().additem('https://sp.yimg.com/ib/th?id=OPA.4D7cP0%2fsFwLImA474C474&o=5&pid=21.1&w=174&h=174','puma'), child:const Text('add to cart')),
-                      ],
+        backgroundColor:const Color.fromARGB(255, 12, 113, 117),
+        elevation: 0,
+        title:const Text('shopping'),
+        actions: [
+          Row(
+            children: [
+              const Icon(Icons.notifications),
+              IconButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (ctx) => const Shopping(),
                     ),
-                    Column(
-                      children: [
-                        SizedBox(
-                          height:150,
-                          width: 120,
-                          child: Card(
-                            child: Image.network('https://sp.yimg.com/ib/th?id=OPA.Wpig4Jzly7lm6w474C474&o=5&pid=21.1&w=174&h=174',fit: BoxFit.cover,),
-                          ),
-                        ),
-                         ElevatedButton(onPressed: ()=>context.read<Cart>().additem('https://sp.yimg.com/ib/th?id=OPA.4D7cP0%2fsFwLImA474C474&o=5&pid=21.1&w=174&h=174','puma'), child:const Text('add to cart')),
-                      ],
-                    ), 
-                    Column(
-                      children: [
-                        SizedBox(
-                          height: 150,
-                          width: 120,
-                          child: Card(
-                            child: Image.network('https://sp.yimg.com/ib/th?id=OPA.IEs57u7l1OsJhw474C474&o=5&pid=21.1&w=174&h=174',fit: BoxFit.cover,),
-                          ),
-                        ),
-                        ElevatedButton(onPressed: ()=>context.read<Cart>().additem('https://sp.yimg.com/ib/th?id=OPA.Wpig4Jzly7lm6w474C474&o=5&pid=21.1&w=174&h=174','adidas'), child:const Text('add to cart')),
-                      ],
-                    ), 
-                    Column(
-                      children: [
-                        SizedBox(
-                          height: 150,
-                          width: 120,
-                          child: Card(
-                            child: Image.network('https://sp.yimg.com/ib/th?id=OPA.IEs57u7l1OsJhw474C474&o=5&pid=21.1&w=174&h=174',fit: BoxFit.cover,),
-                          ),
-                        ),
-                        ElevatedButton(onPressed: ()=>  context.read<Cart>().additem('https://sp.yimg.com/ib/th?id=OPA.IEs57u7l1OsJhw474C474&o=5&pid=21.1&w=174&h=174','Nike'), child:const Text('add to cart'))
-                      ],
-                    ), 
-                  ],
+                  );
+                },
+                icon: const Icon(
+                  Icons.shopping_cart,
+                  color: Colors.white,
                 ),
               ),
+              SizedBox(
+                width: size.width * 0.02,
+              )
+            ],
+          ),
+          PopupMenuButton(
+             // color: Colors.white,
+              itemBuilder: (context) => [
+                    PopupMenuItem(
+                        value: 1,
+                        child: Row(
+                          children: [
+                            const Text('Theme'),
+                            Consumer<ThemeChanger>(
+                              builder: (context, value, child) => Switch(
+                                value: value.thememode == ThemeMode.dark,
+                                onChanged: (newValue) {
+                                  value.toggleTheme(newValue);
+                                },
+                                inactiveThumbColor:
+                                    const Color.fromARGB(255, 255, 255, 255),
+                                activeColor:const Color.fromARGB(255, 6, 119, 180),
+                              ),
+                            ),
+                          ],
+                        )),
+                    PopupMenuItem(
+                      value: 2,
+                      child: Text(
+                          FirebaseAuth.instance.currentUser!.email.toString()),
+                    ),
+                    PopupMenuItem(
+                      value: 3,
+                      child: ElevatedButton(
+                          onPressed: () {
+                            FirebaseAuth.instance.signOut();
+                            Navigator.pop(context);
+                          },
+                          child: const Text("Loge Out")),
+                    )
+                  ]),
+        ],
+      ),
+      body: Container(
+        height: double.infinity,
+        width: double.infinity,
+        decoration: const BoxDecoration(
+            gradient: LinearGradient(
+          colors: [
+            Color.fromARGB(255, 255, 187, 2),
+            Color.fromARGB(255, 0, 112, 127),
+          ],
+          begin: Alignment.topRight,
+          end: Alignment.bottomRight,
+        )),
+        child: ListView(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Stack(
+                alignment: AlignmentDirectional.bottomCenter,
+                children: [Posterimage(context: context)],
+              ),
             ),
-            
-            
+            const Center(
+                child: TextHeadline(
+              text: 'suggests for you',
+              weight: FontWeight.normal,
+              size: 26,
+            )),
+            SizedBox(
+              height: 180,
+              child: StreamBuilder<List<Suggetion>>(
+                stream: context.watch<HomeProvider>().getsuggetions(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasError) {
+                    return Text(
+                      "Somthing went wrong${snapshot.error}",
+                      style: const TextStyle(
+                        color: Color.fromARGB(255, 0, 0, 0),
+                      ),
+                    );
+                  } else if (snapshot.hasData) {
+                    final user = snapshot.data;
+                    return ListView(
+                      scrollDirection: Axis.horizontal,
+                      children: user!
+                          .map(SuggetionsShow(context: context).showCard)
+                          .toList(),
+                    );
+                  }
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                },
+              ),
+            ),
+            const Center(child: TextHeadline(text: 'Top Brands')),
+            StreamBuilder<List<Item>>(
+              stream: context.watch<HomeProvider>().readUser(),
+              builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  return Text(
+                    "Somthing went wrong${snapshot.error}",
+                    style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+                  );
+                } else if (snapshot.hasData) {
+                  final user = snapshot.data;
+                  return Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: GridView(
+                      gridDelegate:
+                          const SliverGridDelegateWithMaxCrossAxisExtent(
+                        maxCrossAxisExtent: 250,
+                        mainAxisExtent: 250,
+                        crossAxisSpacing: 10,
+                        mainAxisSpacing: 1,
+                      ),
+                      shrinkWrap: true,
+                      primary: false,
+                      children: user!
+                          .map(CardItems(context: context).builditems)
+                          .toList(),
+                    ),
+                  );
+                }
+                return const Center(
+                    child: CircularProgressIndicator(
+                  color: Colors.green,
+                ));
+              },
+            ),
           ],
         ),
       ),
     );
   }
-  }
+}

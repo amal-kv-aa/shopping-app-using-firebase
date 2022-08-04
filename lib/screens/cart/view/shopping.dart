@@ -1,4 +1,6 @@
+import 'package:basics_provider/screens/cart/model/model.dart';
 import 'package:basics_provider/screens/cart/provider/cart_provider.dart';
+import 'package:basics_provider/screens/cart/view/widget/cartshow.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -10,53 +12,41 @@ class Shopping extends StatelessWidget {
     Widget build(BuildContext context) {
       final size=MediaQuery.of(context).size;
        return Scaffold(
+        backgroundColor: Colors.grey,
         appBar: AppBar( title:const Center(child:  Text("Cart items")),
-        actions: [ Center(child: Text("total items  ${context.watch<Cart>().count.toString()}",)),
-        SizedBox(width: MediaQuery.of(context).size.width*0.05,)
+        actions: [ 
+        SizedBox(width:size.height*0.05,)
         ],
+        backgroundColor: Colors.transparent,
         ),
         body: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: SizedBox(
-           height: double.infinity, 
-            width: MediaQuery.of(context).size.width,
-            child:ListView.builder(itemCount: context.watch<Cart>().count,itemBuilder:((context, index) {
-              return Padding(
-                padding: const EdgeInsets.all(8.0),
-                child:
-                SizedBox(
-                  height: size.height*0.1,
-                  child: Card(
-                    child: Center(
-                      child: ListTile(
-                        title: Text(context.watch<Cart>().name[index]),
-                        leading: Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(width: 1,color:const Color.fromARGB(255, 255, 255, 255))
-                          ),
-                          child: Image.network(context.watch<Cart>().cart[index],fit: BoxFit.cover,)),
-                        trailing: TextButton(child:const Text('Remove from Cart',style: TextStyle(color: Color.fromARGB(255, 255, 94, 83)),),onPressed: ()=>context.read<Cart>().remove(index),),
-                      ),
-                    ),
-                  ),
-                ),
-              );
-            })), 
-            ), 
+          child:
+           StreamBuilder<List<UserCart>>(
+         stream: context.watch<Cart>().getUserCart(),
+         builder: (context, snapshot) {
+           if (snapshot.hasError) {
+           return Text(
+             "Somthing went wrong${snapshot.error}",
+             style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0),
+             ),
+           );
+           } else if (snapshot.hasData) {
+           final user = snapshot.data;
+           return
+            ListView(
+              scrollDirection: Axis.vertical,
+            children:
+            user!.map(UserCartShow(context: context).cartshow).toList(),
+           );
+           }
+           return const Center(child: CircularProgressIndicator(),
+           );
+         },
+          ), 
         ),
-        bottomNavigationBar: BottomNavigationBar(items:   [
-        const BottomNavigationBarItem(
-          icon: Icon(Icons.ac_unit_sharp),
-          label: '',
-          activeIcon: Text('') ,
-        ),
-        BottomNavigationBarItem(
-          icon:const Icon(Icons.ac_unit_sharp),
-          label: '',
-          activeIcon: ElevatedButton(onPressed: (){}, child:const Text('Place order')),
-        ),
-        ]),
        );
          
      }
+     
 }

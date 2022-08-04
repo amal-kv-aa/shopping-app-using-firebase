@@ -1,11 +1,9 @@
-import 'package:basics_provider/screens/Loby/loby_page.dart';
+import 'package:basics_provider/screens/Loby/view/loby_page.dart';
 import 'package:basics_provider/screens/cart/provider/cart_provider.dart';
 import 'package:basics_provider/screens/home/provider/counter_provider.dart';
 import 'package:basics_provider/screens/home/view/home.dart';
-import 'package:basics_provider/screens/cart/view/shopping.dart';
-import 'package:basics_provider/theme/methodes/theme_changer.dart';
-import 'package:basics_provider/theme/methodes/theme_constants.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:basics_provider/utils/methodes/theme_changer.dart';
+import 'package:basics_provider/utils/methodes/theme_constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +15,7 @@ void  main() async{
   runApp(
    MultiProvider(
     providers: [
-    ChangeNotifierProvider(create:(_) => Counter()),
+    ChangeNotifierProvider(create:(_) => HomeProvider()),
     ChangeNotifierProvider(create:(_) => Cart()),
     ChangeNotifierProvider(create: (_)=> ThemeChanger())
    ],
@@ -48,7 +46,7 @@ class MainPage extends StatelessWidget {
     stream: FirebaseAuth.instance.authStateChanges(),
     builder: (context, snapshot) {
      if (snapshot.hasData) {
-       return const Home();
+       return  Home();
      }
      else{
       return const LobyPage();

@@ -10,7 +10,7 @@ class Showsnackbar extends StatelessWidget {
   static showsnack(BuildContext context,String text){
    ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
-      backgroundColor: Colors.brown,
+      backgroundColor:const Color.fromARGB(255, 211, 164, 36),
       content:
      Text(text),
      )
